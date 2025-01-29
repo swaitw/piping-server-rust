@@ -1,29 +1,44 @@
 # NOTE: Multi-stage Build
 
-FROM nwtgck/rust-musl-builder:1.56.1 as build
+FROM rust:1.84.0 as build
 
-# Install tini
-ENV TINI_VERSION v0.19.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static /tini-static
-RUN sudo chmod +x /tini-static
+ARG TARGETPLATFORM
 
-# Copy to Cargo setting and change the owner
-COPY --chown=rust:rust Cargo.toml Cargo.lock ./
+ENV TINI_STATIC_VERSION 0.19.0
+
+RUN apt update && apt install -y musl-tools
+
+RUN case $TARGETPLATFORM in\
+      linux/amd64)  rust_target="x86_64-unknown-linux-musl";\
+                    tini_static_arch="amd64";;\
+      linux/arm64)  rust_target="aarch64-unknown-linux-musl";\
+                    tini_static_arch="arm64";;\
+      *)            exit 1;;\
+    esac &&\
+    echo $rust_target > /tmp/rust_target.txt &&\
+    # Install tini
+    curl -fL https://github.com/krallin/tini/releases/download/v${TINI_STATIC_VERSION}/tini-static-${tini_static_arch} > /tmp/tini-static &&\
+    chmod +x /tmp/tini-static &&\
+    rustup target add $rust_target
+
+# Copy to Cargo setting
+COPY Cargo.toml Cargo.lock /app/
 # Build empty project for better cache
-RUN mkdir src && \
+RUN cd /app && \
+    mkdir src && \
     echo "fn main() {}" > src/main.rs && \
-    cargo build --release && rm -r src
+    cargo build --release --target=$(cat /tmp/rust_target.txt) --locked && rm -r src
 
-# Copy to current directory and change the owner
-COPY --chown=rust:rust . ./
+COPY . /app/
 # Build
-RUN cargo build --release
+RUN cd /app && cargo build --release --target=$(cat /tmp/rust_target.txt) --locked
+RUN cp -a /app/target/$(cat /tmp/rust_target.txt)/ /tmp/build/
 
 FROM scratch
 LABEL maintainer="Ryo Ota <nwtgck@nwtgck.org>"
 
 # Copy executables
-COPY --from=build /tini-static /tini-static
-COPY --from=build /home/rust/src/target/x86_64-unknown-linux-musl/release/piping-server /piping-server
+COPY --from=build /tmp/tini-static /tini-static
+COPY --from=build /tmp/build/release/piping-server /piping-server
 # Run a server
 ENTRYPOINT [ "/tini-static", "--", "/piping-server" ]

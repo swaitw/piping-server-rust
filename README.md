@@ -1,7 +1,5 @@
 # piping-server
-[![CI](https://github.com/nwtgck/piping-server-rust/workflows/CI/badge.svg)](https://github.com/nwtgck/piping-server-rust/actions) [![CircleCI](https://circleci.com/gh/nwtgck/piping-server-rust.svg?style=shield)](https://circleci.com/gh/nwtgck/piping-server-rust) [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/nwtgck/piping-server-rust)](https://hub.docker.com/r/nwtgck/piping-server-rust)
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+[![CI](https://github.com/nwtgck/piping-server-rust/workflows/CI/badge.svg)](https://github.com/nwtgck/piping-server-rust/actions) [![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/nwtgck/piping-server-rust)](https://hub.docker.com/r/nwtgck/piping-server-rust)
 
 [Piping Server](https://github.com/nwtgck/piping-server) written in Rust
 
@@ -29,35 +27,42 @@ docker run -p 8181:8080 nwtgck/piping-server-rust
 
 ```bash
 # Download and extract
-curl -L https://github.com/nwtgck/piping-server-rust/releases/download/v0.10.1/piping-server-x86-64-linux.tar.gz | tar xzf -
+curl -L https://github.com/nwtgck/piping-server-rust/releases/download/v0.18.0/piping-server-x86_64-unknown-linux-musl.tar.gz | tar xzf -
 # Run on 8181 port
-./piping-server-x86-64-linux/piping-server --http-port=8181
+./piping-server-x86_64-unknown-linux-musl/piping-server --http-port=8181
 ```
 
-### Way 3: Binary for macOS
+### Way 3: Binary for macOS (Intel)
 
 ```bash
 # Download and extract
-curl -L https://github.com/nwtgck/piping-server-rust/releases/download/v0.10.1/piping-server-x86-64-apple-darwin.tar.gz | tar xzf -
+curl -L https://github.com/nwtgck/piping-server-rust/releases/download/v0.18.0/piping-server-x86_64-apple-darwin.tar.gz | tar xzf -
 # Run on 8181 port
-./piping-server-x86-64-apple-darwin/piping-server --http-port=8181
+./piping-server-x86_64-apple-darwin/piping-server --http-port=8181
 ```
 
-Executable files are available on [GitHub Release](https://github.com/nwtgck/piping-server-rust/releases) for Linux and macOS. The executable file for Linux is portable because it is statically linked.
+### Way 4: Binary for macOS (Apple Silicon)
 
-### Way4: Heroku
+```bash
+# Download and extract
+curl -L https://github.com/nwtgck/piping-server-rust/releases/download/v0.18.0/piping-server-aarch64-apple-darwin.tar.gz | tar xzf -
+# Run on 8181 port
+./piping-server-aarch64-apple-darwin/piping-server --http-port=8181
+```
 
-Click the button bellow to deploy.
+### Way 5: Windows
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+<https://github.com/nwtgck/piping-server-rust/releases/download/v0.18.0/piping-server-x86_64-pc-windows-gnu.zip>  
 
-### Way5: Replit
+Executable files are available on [GitHub Release](https://github.com/nwtgck/piping-server-rust/releases).
+
+### Way 6: Replit
 
 Click <kbd>Fork</kbd> button in the link below and fork it.
 
 <https://replit.com/@nwtgck/piping-rust>
 
-### Way 6: Build and run by yourself
+### Way 7: Build and run by yourself
 You can clone, build and run `piping-server` as follows.
 
 ```bash
@@ -75,17 +80,15 @@ cargo build --release
 ```txt
 Piping Server in Rust
 
-USAGE:
-    piping-server [FLAGS] [OPTIONS]
+Usage: piping-server [OPTIONS]
 
-FLAGS:
-        --enable-https    Enable HTTPS
-    -h, --help            Prints help information
-    -V, --version         Prints version information
-
-OPTIONS:
-        --crt-path <crt-path>        Certification path
-        --http-port <http-port>      HTTP port [default: 8080]
-        --https-port <https-port>    HTTPS port
-        --key-path <key-path>        Private key path
+Options:
+      --host <HOST>              Bind address, either IPv4 or IPv6 (e.g. 127.0.0.1, ::1) [default: 0.0.0.0]
+      --http-port <HTTP_PORT>    HTTP port [default: 8080]
+      --enable-https             Enable HTTPS
+      --https-port <HTTPS_PORT>  HTTPS port
+      --crt-path <CRT_PATH>      Certification path
+      --key-path <KEY_PATH>      Private key path
+      --version                  Print version
+  -h, --help                     Print help
 ```
